@@ -1,12 +1,29 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import HeaderTop from './components/HeaderTop'
 import HeaderNav from './components/HeaderNav'
 import Tabs, { type TabKey } from './components/Tabs'
 import MonthPager from './components/MonthPager'
 import AffiliateTable from './components/AffiliateTable'
+import { fetchAffiliateManagerData } from '../../api/affiliateManager'
+import type { AffiliateDataResponse } from '../../types/api'
 
 function AffiliateManagerView() {
   const [activeTab, setActiveTab] = useState<TabKey>('scheme')
+  const [data, setData] = useState<AffiliateDataResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetchAffiliateManagerData()
+      .then((response) => {
+        setData(response)
+        setLoading(false)
+      })
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : 'Failed to load data')
+        setLoading(false)
+      })
+  }, [])
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -42,7 +59,29 @@ function AffiliateManagerView() {
         </div>
         <Tabs value={activeTab} onChange={setActiveTab} />
         <MonthPager />
-        <AffiliateTable />
+        {loading && (
+          <div
+            className="mb-4"
+            style={{
+              color: 'var(--color-text-secondary)',
+              fontSize: 'var(--font-size-base)',
+            }}
+          >
+            Loading...
+          </div>
+        )}
+        {error && (
+          <div
+            className="mb-4"
+            style={{
+              color: 'var(--color-text-primary)',
+              fontSize: 'var(--font-size-base)',
+            }}
+          >
+            Error: {error}
+          </div>
+        )}
+        <AffiliateTable data={data} />
       </main>
     </div>
   )

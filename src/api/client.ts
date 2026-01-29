@@ -1,11 +1,9 @@
-// Fetch wrapper
-export const client = {
-  get: async <T>(url: string): Promise<T> => {
-    const response = await fetch(url)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    return response.json()
-  },
+export async function getJson<T>(url: string): Promise<T> {
+  const response = await fetch(url)
+  
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  
+  return response.json()
 }
-

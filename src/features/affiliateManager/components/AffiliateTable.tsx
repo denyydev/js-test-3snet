@@ -1,5 +1,16 @@
-function AffiliateTable() {
-  const managers = ['Manager 1', 'Manager 2', 'Manager 3', 'Manager 4']
+import type { AffiliateDataResponse } from '../../../types/api'
+
+type AffiliateTableProps = {
+  data: AffiliateDataResponse | null
+}
+
+function AffiliateTable({ data }: AffiliateTableProps) {
+  const managers = data?.data.table.map((row) => row.manager) || [
+    'Manager 1',
+    'Manager 2',
+    'Manager 3',
+    'Manager 4',
+  ]
 
   return (
     <div

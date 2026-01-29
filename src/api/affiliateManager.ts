@@ -1,9 +1,6 @@
-import { client } from './client'
+import { getJson } from './client'
 import type { AffiliateDataResponse } from '../types/api'
 
-export const affiliateManagerApi = {
-  getData: async (): Promise<AffiliateDataResponse> => {
-    return client.get<AffiliateDataResponse>('/api/affiliate-manager')
-  },
+export async function fetchAffiliateManagerData(): Promise<AffiliateDataResponse> {
+  return getJson<AffiliateDataResponse>('https://3snet.co/js_test/api.json')
 }
-
