@@ -14,7 +14,7 @@ function AffiliateManagerView() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [startMonthIndex, setStartMonthIndex] = useState(getCurrentMonthIndex)
-  
+
   const visibleMonths = getMonthWindow(startMonthIndex, 6)
 
   const loadData = () => {
@@ -41,9 +41,9 @@ function AffiliateManagerView() {
       <HeaderNav />
       <main className="flex-1 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 
+          <h1
             className="text-2xl font-medium"
-            style={{ 
+            style={{
               color: 'var(--color-text-primary)',
               fontSize: 'var(--font-size-heading)',
               lineHeight: 'var(--line-height-heading)',
@@ -52,31 +52,47 @@ function AffiliateManagerView() {
           >
             Affiliate manager
           </h1>
-          <button
-            type="button"
-            className="px-6 py-2 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-            style={{
-              backgroundColor: 'var(--color-primary)',
-              color: 'var(--color-text-white)',
-              borderRadius: 'var(--border-radius-large)',
-              fontSize: 'var(--font-size-base)',
-              lineHeight: 'var(--line-height-base)',
-              fontWeight: 'var(--font-weight-medium)'
-            }}
-          >
-            Add plan
-          </button>
+
         </div>
         <Tabs
           value={activeTab}
           onChange={setActiveTab}
           disabled={loading}
         />
-        <MonthPager
-          onPrev={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, -1))}
-          onNext={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, 1))}
-          disabled={loading || error !== null}
-        />
+        <div className="flex items-center justify-between pb-5">
+          <button
+            type="button"
+            className="flex h-10 w-[130px] items-center justify-between rounded-md border border-[#D6E3EC] bg-white px-3 text-[16px] font-medium text-[#4F669D]"
+          >
+            Year 2025
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path
+                d="M4 6L8 10L12 6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          <div className="flex items-center gap-4">
+            <MonthPager
+              onPrev={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, -1))}
+              onNext={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, 1))}
+              disabled={loading || error !== null}
+            />
+
+            <button
+              type="button"
+              className="flex h-10 items-center gap-2 rounded-md bg-[#202F55] px-4 text-[16px] font-medium text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            >
+              <span className="text-[20px] leading-none text-[#D6E3EC]">+</span>
+              Add plan
+            </button>
+          </div>
+        </div>
+
         <AffiliateTable
           data={data?.data ?? null}
           visibleMonths={visibleMonths}
