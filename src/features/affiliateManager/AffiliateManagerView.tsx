@@ -1,10 +1,13 @@
+import { useState } from 'react'
 import HeaderTop from './components/HeaderTop'
 import HeaderNav from './components/HeaderNav'
-import Tabs from './components/Tabs'
+import Tabs, { type TabKey } from './components/Tabs'
 import MonthPager from './components/MonthPager'
 import AffiliateTable from './components/AffiliateTable'
 
 function AffiliateManagerView() {
+  const [activeTab, setActiveTab] = useState<TabKey>('scheme')
+
   return (
     <div className="flex flex-col min-h-screen">
       <HeaderTop />
@@ -37,7 +40,7 @@ function AffiliateManagerView() {
             Add plan
           </button>
         </div>
-        <Tabs />
+        <Tabs value={activeTab} onChange={setActiveTab} />
         <MonthPager />
         <AffiliateTable />
       </main>
