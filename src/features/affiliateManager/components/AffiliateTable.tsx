@@ -1,18 +1,58 @@
 import type { AffiliateDataResponse } from '../../../types/api'
+import type { TabKey } from './Tabs'
+import type { TableRow } from '../../../types/api'
 import { getMonthLabel } from '../../../utils/months'
 
 type AffiliateTableProps = {
-  data: AffiliateDataResponse | null
+  data: AffiliateDataResponse['data'] | null
   visibleMonths: number[]
+  tab: TabKey
 }
 
-function AffiliateTable({ data, visibleMonths }: AffiliateTableProps) {
-  const managers = data?.data.table.map((row) => row.manager) || [
-    'Manager 1',
-    'Manager 2',
-    'Manager 3',
-    'Manager 4',
-  ]
+function renderMonthCell(row: TableRow, monthIndex: number) {
+  const entry = row.months?.[monthIndex] ?? null
+
+  if (entry === null || entry === undefined) {
+    return (
+      <>
+        <div>No data</div>
+        <div></div>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <div>{entry.plan.income}</div>
+      <div>{entry.plan.activePartners}</div>
+    </>
+  )
+}
+
+function calculateRowTotal(row: TableRow) {
+  const totals = row.months.reduce(
+    (acc, entry) => {
+      if (entry !== null && entry !== undefined) {
+        acc.income += entry.plan.income
+        acc.activePartners += entry.plan.activePartners
+      }
+      return acc
+    },
+    { income: 0, activePartners: 0 }
+  )
+  return totals
+}
+
+function AffiliateTable({ data, visibleMonths, tab: _tab }: AffiliateTableProps) {
+  const rows = data?.table || []
+
+  const isValidMonthIndex = (index: number): boolean => {
+    return Number.isInteger(index) && index >= 0 && index <= 11
+  }
+
+  const isValidVisibleMonths =
+    visibleMonths.length === 6 &&
+    visibleMonths.every(isValidMonthIndex)
 
   return (
     <div
@@ -73,62 +113,77 @@ function AffiliateTable({ data, visibleMonths }: AffiliateTableProps) {
         </div>
       ))}
 
-      {managers.map((manager, rowIndex) => (
-        <div key={`row-${rowIndex}`} style={{ display: 'contents' }}>
-          <div
-            className="p-4 flex items-center"
-            style={{
-              color: 'var(--color-text-primary)',
-              fontSize: 'var(--font-size-base)',
-              borderBottom:
-                rowIndex < managers.length - 1
-                  ? '1px solid var(--color-border)'
-                  : 'none',
-            }}
-          >
-            {manager}
-          </div>
-          <div
-            className="p-4 flex flex-col justify-center gap-2"
-            style={{
-              color: 'var(--color-text-primary)',
-              fontSize: 'var(--font-size-small)',
-              borderLeft: '1px solid var(--color-border)',
-              borderBottom:
-                rowIndex < managers.length - 1
-                  ? '1px solid var(--color-border)'
-                  : 'none',
-            }}
-          >
-            <div>Value 1</div>
-            <div
-              style={{
-                borderTop: '1px solid var(--color-border)',
-                paddingTop: '4px',
-              }}
-            />
-            <div>Value 2</div>
-          </div>
-          {Array.from({ length: 6 }, (_, colIndex) => (
-            <div
-              key={`month-${rowIndex}-${colIndex}`}
-              className="p-4 flex flex-col justify-center gap-1"
-              style={{
-                color: 'var(--color-text-primary)',
-                fontSize: 'var(--font-size-small)',
-                borderLeft: '1px solid var(--color-border)',
-                borderBottom:
-                  rowIndex < managers.length - 1
-                    ? '1px solid var(--color-border)'
-                    : 'none',
-              }}
-            >
-              <div>Top</div>
-              <div>Bottom</div>
-            </div>
-          ))}
+      {!isValidVisibleMonths ? (
+        <div
+          className="p-4 col-span-8"
+          style={{
+            color: 'var(--color-text-primary)',
+            fontSize: 'var(--font-size-base)',
+            borderTop: '1px solid var(--color-border)',
+          }}
+        >
+          Invalid month window
         </div>
-      ))}
+      ) : (
+        rows.map((row, rowIndex) => {
+          const rowTotal = calculateRowTotal(row)
+          return (
+            <div key={`row-${rowIndex}`} style={{ display: 'contents' }}>
+              <div
+                className="p-4 flex items-center"
+                style={{
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--font-size-base)',
+                  borderBottom:
+                    rowIndex < rows.length - 1
+                      ? '1px solid var(--color-border)'
+                      : 'none',
+                }}
+              >
+                {row.adminName}
+              </div>
+              <div
+                className="p-4 flex flex-col justify-center gap-2"
+                style={{
+                  color: 'var(--color-text-primary)',
+                  fontSize: 'var(--font-size-small)',
+                  borderLeft: '1px solid var(--color-border)',
+                  borderBottom:
+                    rowIndex < rows.length - 1
+                      ? '1px solid var(--color-border)'
+                      : 'none',
+                }}
+              >
+                <div>{rowTotal.income}</div>
+                <div
+                  style={{
+                    borderTop: '1px solid var(--color-border)',
+                    paddingTop: '4px',
+                  }}
+                />
+                <div>{rowTotal.activePartners}</div>
+              </div>
+              {visibleMonths.map((monthIndex, colIndex) => (
+                <div
+                  key={`month-${rowIndex}-${colIndex}`}
+                  className="p-4 flex flex-col justify-center gap-1"
+                  style={{
+                    color: 'var(--color-text-primary)',
+                    fontSize: 'var(--font-size-small)',
+                    borderLeft: '1px solid var(--color-border)',
+                    borderBottom:
+                      rowIndex < rows.length - 1
+                        ? '1px solid var(--color-border)'
+                        : 'none',
+                  }}
+                >
+                  {renderMonthCell(row, monthIndex)}
+                </div>
+              ))}
+            </div>
+          )
+        })
+      )}
     </div>
   )
 }

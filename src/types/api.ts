@@ -4,19 +4,22 @@ export type MonthData = {
 }
 
 export type MonthEntry = {
-  month: number
-  year: number
+  income: number
+  activePartners: number
   plan: MonthData
   fact: MonthData
 } | null
 
 export type TableRow = {
-  manager: string
+  id: number
+  adminId: number
+  adminName: string
   months: MonthEntry[]
-  total: MonthData
+  year: number
 }
 
 export type AffiliateDataResponse = {
+  success: boolean
   data: {
     total: MonthEntry[]
     table: TableRow[]

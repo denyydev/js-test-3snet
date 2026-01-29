@@ -88,7 +88,11 @@ function AffiliateManagerView() {
             Error: {error}
           </div>
         )}
-        <AffiliateTable data={data} visibleMonths={visibleMonths} />
+        <AffiliateTable
+          data={data?.data ?? null}
+          visibleMonths={visibleMonths}
+          tab={activeTab}
+        />
       </main>
     </div>
   )
