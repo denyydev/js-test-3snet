@@ -1,10 +1,12 @@
 import type { AffiliateDataResponse } from '../../../types/api'
+import { getMonthLabel } from '../../../utils/months'
 
 type AffiliateTableProps = {
   data: AffiliateDataResponse | null
+  visibleMonths: number[]
 }
 
-function AffiliateTable({ data }: AffiliateTableProps) {
+function AffiliateTable({ data, visibleMonths }: AffiliateTableProps) {
   const managers = data?.data.table.map((row) => row.manager) || [
     'Manager 1',
     'Manager 2',
@@ -55,7 +57,7 @@ function AffiliateTable({ data }: AffiliateTableProps) {
           </div>
         </div>
       </div>
-      {Array.from({ length: 6 }, (_, i) => (
+      {visibleMonths.map((monthIndex, i) => (
         <div
           key={i}
           className="p-4 font-medium"
@@ -67,7 +69,7 @@ function AffiliateTable({ data }: AffiliateTableProps) {
             borderLeft: '1px solid var(--color-border)',
           }}
         >
-          Month {i + 1}
+          {getMonthLabel(monthIndex)}
         </div>
       ))}
 
