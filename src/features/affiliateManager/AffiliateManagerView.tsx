@@ -85,7 +85,7 @@ function AffiliateManagerView() {
 
             <button
               type="button"
-              className="flex h-10 items-center gap-2 rounded-md bg-[#202F55] px-4 text-[16px] font-medium text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              className="cursor-pointer flex h-10 items-center gap-2 rounded-md bg-[#202F55] px-4 text-[16px] font-medium text-white transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             >
               <span className="text-[20px] leading-none text-[#D6E3EC]">+</span>
               Add plan

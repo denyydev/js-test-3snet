@@ -12,7 +12,7 @@ function MonthPager({ onPrev, onNext, disabled = false }: MonthPagerProps) {
         onClick={onPrev}
         disabled={disabled}
         aria-label="Previous month"
-        className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDEDF] bg-white text-[#202F55] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDEDF] bg-white text-[#202F55] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <ChevronLeft />
       </button>
@@ -22,7 +22,7 @@ function MonthPager({ onPrev, onNext, disabled = false }: MonthPagerProps) {
         onClick={onNext}
         disabled={disabled}
         aria-label="Next month"
-        className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDEDF] bg-white text-[#202F55] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="cursor-pointer flex h-10 w-10 items-center justify-center rounded-lg border border-[#DDDEDF] bg-white text-[#202F55] transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <ChevronRight />
       </button>

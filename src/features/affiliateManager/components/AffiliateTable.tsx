@@ -1,6 +1,5 @@
-import type { AffiliateDataResponse } from '../../../types/api'
+import type { AffiliateDataResponse, MonthEntry, TableRow } from '../../../types/api'
 import type { TabKey } from './Tabs'
-import type { TableRow, MonthEntry } from '../../../types/api'
 import { getMonthLabel } from '../../../utils/months'
 
 type AffiliateTableProps = {
@@ -12,64 +11,68 @@ type AffiliateTableProps = {
   onRetry?: () => void
 }
 
-function getTabValues(entry: MonthEntry, tab: TabKey): { income: number; activePartners: number } | null {
-  if (entry === null || entry === undefined) {
-    return null
-  }
+type Pair = { income: number; activePartners: number }
+type PlanFact = { plan: Pair; fact: Pair } | null
 
-  switch (tab) {
-    case 'scheme':
-      return {
-        income: entry.income,
-        activePartners: entry.activePartners,
-      }
-    case 'plan':
-      return {
-        income: entry.plan.income,
-        activePartners: entry.plan.activePartners,
-      }
-    case 'payment':
-      return {
-        income: entry.fact.income,
-        activePartners: entry.fact.activePartners,
-      }
+const cn = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(' ')
+
+const GRID_TEMPLATE = '200px 180px repeat(6, 1fr) 48px'
+
+function getPlanFactValues(entry: MonthEntry | null | undefined): PlanFact {
+  if (!entry) return null
+
+  return {
+    plan: {
+      income: entry.plan?.income ?? 0,
+      activePartners: entry.plan?.activePartners ?? 0,
+    },
+    fact: {
+      income: entry.fact?.income ?? 0,
+      activePartners: entry.fact?.activePartners ?? 0,
+    },
   }
 }
 
-function renderMonthCell(row: TableRow, monthIndex: number, tab: TabKey) {
+function renderMonthCell(row: TableRow, monthIndex: number) {
   const entry = row.months?.[monthIndex] ?? null
-  const values = getTabValues(entry, tab)
+  const values = getPlanFactValues(entry)
 
-  if (values === null) {
+  if (!values) {
     return (
-      <>
-        <div>No data</div>
-        <div></div>
-      </>
+      <div>No data</div>
     )
   }
 
   return (
     <>
-      <div>{values.income}</div>
-      <div>{values.activePartners}</div>
+      <div className="flex items-center justify-between gap-2">
+        <span>$ {values.plan.income}</span>
+        <span>$ {values.fact.income}</span>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        <span>{values.plan.activePartners}</span>
+        <span>{values.fact.activePartners}</span>
+      </div>
     </>
   )
 }
 
-function calculateRowTotal(row: TableRow, tab: TabKey) {
-  const totals = row.months.reduce(
-    (acc, entry) => {
-      const values = getTabValues(entry, tab)
-      if (values !== null) {
-        acc.income += values.income
-        acc.activePartners += values.activePartners
-      }
-      return acc
+function getTotalMonthPlanFact(
+  data: AffiliateDataResponse['data'] | null,
+  monthIndex: number
+): { plan: Pair; fact: Pair } {
+  const t = data?.total?.[monthIndex]
+  return {
+    plan: {
+      income: t?.plan?.income ?? 0,
+      activePartners: t?.plan?.activePartners ?? 0,
     },
-    { income: 0, activePartners: 0 }
-  )
-  return totals
+    fact: {
+      income: t?.fact?.income ?? 0,
+      activePartners: t?.fact?.activePartners ?? 0,
+    },
+  }
 }
 
 function AffiliateTable({
@@ -80,195 +83,240 @@ function AffiliateTable({
   error = null,
   onRetry,
 }: AffiliateTableProps) {
-  const rows = data?.table || []
+  void tab
 
-  const isValidMonthIndex = (index: number): boolean => {
-    return Number.isInteger(index) && index >= 0 && index <= 11
-  }
+  const rows = data?.table ?? []
+
+  const isValidMonthIndex = (index: number) =>
+    Number.isInteger(index) && index >= 0 && index <= 11
 
   const isValidVisibleMonths =
-    visibleMonths.length === 6 &&
-    visibleMonths.every(isValidMonthIndex)
+    visibleMonths.length === 6 && visibleMonths.every(isValidMonthIndex)
+
+  const base = {
+    border: 'border border-[var(--color-border)]',
+    b: 'border-b border-b-[var(--color-border)]',
+    l: 'border-l border-l-[var(--color-border)]',
+    bgHead: 'bg-[var(--color-background-light)]',
+    text: 'text-[var(--color-text-primary)]',
+    muted: 'text-[var(--color-text-muted)]',
+    secondary: 'text-[var(--color-text-secondary)]',
+  }
+
+  const headCell = (disabled: boolean) =>
+    cn(
+      'p-4 font-medium',
+      base.bgHead,
+      base.b,
+      base.l,
+      disabled ? `${base.muted} opacity-80` : base.text,
+      'text-[length:var(--font-size-base)]'
+    )
+
+  const totalsCell = (disabled: boolean) =>
+    cn(
+      'p-4 flex flex-col justify-center gap-2',
+      base.bgHead,
+      base.b,
+      base.l,
+      disabled ? `${base.muted} opacity-80` : base.text,
+      'text-[length:var(--font-size-small)]'
+    )
+
+  const rowBorder = (rowIndex: number) =>
+    rowIndex < rows.length - 1 ? base.b : ''
 
   return (
     <div
-      className="border rounded-lg overflow-hidden"
-      style={{
-        borderColor: 'var(--color-border)',
-        display: 'grid',
-        gridTemplateColumns: '200px 180px repeat(6, 1fr)',
-      }}
+      className={cn('overflow-hidden', base.border)}
+      style={{ display: 'grid', gridTemplateColumns: GRID_TEMPLATE }}
     >
+      <div className={cn('p-4', base.bgHead, base.b)} />
+      <div className={cn('p-4', base.bgHead, base.b, base.l)} />
+
+      {visibleMonths.map((monthIndex, i) => {
+        const disabled = i < 4
+        return (
+          <div key={`h-month-${i}`} className={headCell(disabled)}>
+            <div className="flex flex-col gap-2">
+              <div>{getMonthLabel(monthIndex)}</div>
+              <div className="flex items-center justify-between text-[length:var(--font-size-small)]">
+                <span>Plan</span>
+                <span>Fact</span>
+              </div>
+            </div>
+          </div>
+        )
+      })}
+
+      <div className={cn('p-4', base.bgHead, base.b, base.l)} />
+
       <div
-        className="p-4 font-medium"
-        style={{
-          backgroundColor: 'var(--color-background-light)',
-          color: 'var(--color-text-primary)',
-          fontSize: 'var(--font-size-base)',
-          borderBottom: '1px solid var(--color-border)',
-        }}
+        className={cn(
+          'p-4 font-medium',
+          base.bgHead,
+          base.b,
+          base.text,
+          'text-[length:var(--font-size-base)]'
+        )}
       >
         Manager
       </div>
+
       <div
-        className="p-4 font-medium"
-        style={{
-          backgroundColor: 'var(--color-background-light)',
-          color: 'var(--color-text-primary)',
-          fontSize: 'var(--font-size-base)',
-          borderBottom: '1px solid var(--color-border)',
-          borderLeft: '1px solid var(--color-border)',
-        }}
+        className={cn(
+          'p-4 font-medium',
+          base.bgHead,
+          base.b,
+          base.l,
+          base.text,
+          'text-[length:var(--font-size-base)]'
+        )}
       >
         <div className="flex flex-col gap-2">
-          <div style={{ fontSize: 'var(--font-size-small)' }}>Total income</div>
-          <div
-            style={{
-              borderTop: '1px solid var(--color-border)',
-              paddingTop: '4px',
-            }}
-          />
-          <div style={{ fontSize: 'var(--font-size-small)' }}>
-            Total active partners
-          </div>
+          <div className="text-[length:var(--font-size-small)]">Total income</div>
+          <div className="pt-1 border-t border-t-[var(--color-border)]" />
+          <div className="text-[length:var(--font-size-small)]">Plan / Fact</div>
         </div>
       </div>
-      {visibleMonths.map((monthIndex, i) => (
-        <div
-          key={i}
-          className="p-4 font-medium"
-          style={{
-            backgroundColor: 'var(--color-background-light)',
-            color: 'var(--color-text-primary)',
-            fontSize: 'var(--font-size-base)',
-            borderBottom: '1px solid var(--color-border)',
-            borderLeft: '1px solid var(--color-border)',
-          }}
-        >
-          {getMonthLabel(monthIndex)}
-        </div>
-      ))}
+
+      {visibleMonths.map((monthIndex, i) => {
+        const totals = getTotalMonthPlanFact(data, monthIndex)
+        const disabled = i < 4
+
+        return (
+          <div key={`totals-${i}`} className={totalsCell(disabled)}>
+            <div className="flex items-center justify-between gap-2">
+              <span>$ {totals.plan.income}</span>
+              <span>$ {totals.fact.income}</span>
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <span>{totals.plan.activePartners}</span>
+              <span>{totals.fact.activePartners}</span>
+            </div>
+          </div>
+        )
+      })}
+
+      <div className={cn('p-4', base.bgHead, base.b, base.l)} />
 
       {loading ? (
         <div
-          className="p-8 col-span-8 flex items-center justify-center"
-          style={{
-            color: 'var(--color-text-secondary)',
-            fontSize: 'var(--font-size-base)',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className={cn(
+            'p-8 col-span-9 flex items-center justify-center',
+            base.secondary,
+            'text-[length:var(--font-size-base)]',
+            'border-t border-t-[var(--color-border)]'
+          )}
         >
           Loading...
         </div>
       ) : error ? (
         <div
-          className="p-8 col-span-8 flex flex-col items-center justify-center gap-4"
-          style={{
-            color: 'var(--color-text-primary)',
-            fontSize: 'var(--font-size-base)',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className={cn(
+            'p-8 col-span-9 flex flex-col items-center justify-center gap-4',
+            base.text,
+            'text-[length:var(--font-size-base)]',
+            'border-t border-t-[var(--color-border)]'
+          )}
         >
           <div>Error: {error}</div>
-          {onRetry && (
+          {onRetry ? (
             <button
               type="button"
               onClick={onRetry}
-              className="px-4 py-2 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              style={{
-                backgroundColor: 'var(--color-primary)',
-                color: 'var(--color-text-white)',
-                borderRadius: 'var(--border-radius-large)',
-                fontSize: 'var(--font-size-base)',
-                lineHeight: 'var(--line-height-base)',
-                fontWeight: 'var(--font-weight-medium)',
-              }}
+              className={cn(
+                'px-4 py-2 rounded-lg transition-opacity hover:opacity-90',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                'bg-[var(--color-primary)] text-[var(--color-text-white)]',
+                'text-[length:var(--font-size-base)] leading-[var(--line-height-base)] font-medium'
+              )}
             >
               Retry
             </button>
-          )}
+          ) : null}
         </div>
       ) : !isValidVisibleMonths ? (
         <div
-          className="p-4 col-span-8"
-          style={{
-            color: 'var(--color-text-primary)',
-            fontSize: 'var(--font-size-base)',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className={cn(
+            'p-4 col-span-9',
+            base.text,
+            'text-[length:var(--font-size-base)]',
+            'border-t border-t-[var(--color-border)]'
+          )}
         >
           Invalid month window
         </div>
       ) : rows.length === 0 ? (
         <div
-          className="p-8 col-span-8 flex items-center justify-center"
-          style={{
-            color: 'var(--color-text-secondary)',
-            fontSize: 'var(--font-size-base)',
-            borderTop: '1px solid var(--color-border)',
-          }}
+          className={cn(
+            'p-8 col-span-9 flex items-center justify-center',
+            base.secondary,
+            'text-[length:var(--font-size-base)]',
+            'border-t border-t-[var(--color-border)]'
+          )}
         >
           No rows
         </div>
       ) : (
-        rows.map((row, rowIndex) => {
-          const rowTotal = calculateRowTotal(row, tab)
-          return (
-            <div key={`row-${rowIndex}`} style={{ display: 'contents' }}>
-              <div
-                className="p-4 flex items-center"
-                style={{
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--font-size-base)',
-                  borderBottom:
-                    rowIndex < rows.length - 1
-                      ? '1px solid var(--color-border)'
-                      : 'none',
-                }}
-              >
-                {row.adminName}
-              </div>
-              <div
-                className="p-4 flex flex-col justify-center gap-2"
-                style={{
-                  color: 'var(--color-text-primary)',
-                  fontSize: 'var(--font-size-small)',
-                  borderLeft: '1px solid var(--color-border)',
-                  borderBottom:
-                    rowIndex < rows.length - 1
-                      ? '1px solid var(--color-border)'
-                      : 'none',
-                }}
-              >
-                <div>{rowTotal.income}</div>
-                <div
-                  style={{
-                    borderTop: '1px solid var(--color-border)',
-                    paddingTop: '4px',
-                  }}
-                />
-                <div>{rowTotal.activePartners}</div>
-              </div>
-              {visibleMonths.map((monthIndex, colIndex) => (
+        rows.map((row, rowIndex) => (
+          <div key={`row-${rowIndex}`} style={{ display: 'contents' }}>
+            <div
+              className={cn(
+                'p-4 flex items-center',
+                base.text,
+                'text-[length:var(--font-size-base)]',
+                rowBorder(rowIndex)
+              )}
+            >
+              {row.adminName}
+            </div>
+
+            <div
+              className={cn(
+                'p-4 flex flex-col justify-center gap-2 opacity-50',
+                base.text,
+                'text-[length:var(--font-size-small)]',
+                base.l,
+                rowBorder(rowIndex)
+              )}
+            >
+              <div>Income:</div>
+              <div className="pt-1 border-t border-t-[var(--color-border)]" />
+              <div>Active partners</div>
+            </div>
+
+            {visibleMonths.map((monthIndex, colIndex) => {
+              const disabled = colIndex < 4
+              return (
                 <div
                   key={`month-${rowIndex}-${colIndex}`}
-                  className="p-4 flex flex-col justify-center gap-1"
-                  style={{
-                    color: 'var(--color-text-primary)',
-                    fontSize: 'var(--font-size-small)',
-                    borderLeft: '1px solid var(--color-border)',
-                    borderBottom:
-                      rowIndex < rows.length - 1
-                        ? '1px solid var(--color-border)'
-                        : 'none',
-                  }}
+                  className={cn(
+                    'p-4 flex flex-col justify-center gap-1',
+                    'text-[length:var(--font-size-small)]',
+                    base.l,
+                    rowBorder(rowIndex),
+                    disabled ? `${base.muted} opacity-80` : base.text
+                  )}
                 >
-                  {renderMonthCell(row, monthIndex, tab)}
+                  {renderMonthCell(row, monthIndex)}
                 </div>
-              ))}
+              )
+            })}
+
+            <div
+              className={cn(
+                'p-4 flex items-center justify-center',
+                base.l,
+                rowBorder(rowIndex),
+                base.secondary,
+                'text-[length:var(--font-size-base)]'
+              )}
+            >
+              ...
             </div>
-          )
-        })
+          </div>
+        ))
       )}
     </div>
   )
