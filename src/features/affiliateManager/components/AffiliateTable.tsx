@@ -1,6 +1,6 @@
 import type { AffiliateDataResponse } from '../../../types/api'
 import type { TabKey } from './Tabs'
-import type { TableRow } from '../../../types/api'
+import type { TableRow, MonthEntry } from '../../../types/api'
 import { getMonthLabel } from '../../../utils/months'
 
 type AffiliateTableProps = {
@@ -9,10 +9,35 @@ type AffiliateTableProps = {
   tab: TabKey
 }
 
-function renderMonthCell(row: TableRow, monthIndex: number) {
-  const entry = row.months?.[monthIndex] ?? null
-
+function getTabValues(entry: MonthEntry, tab: TabKey): { income: number; activePartners: number } | null {
   if (entry === null || entry === undefined) {
+    return null
+  }
+
+  switch (tab) {
+    case 'scheme':
+      return {
+        income: entry.income,
+        activePartners: entry.activePartners,
+      }
+    case 'plan':
+      return {
+        income: entry.plan.income,
+        activePartners: entry.plan.activePartners,
+      }
+    case 'payment':
+      return {
+        income: entry.fact.income,
+        activePartners: entry.fact.activePartners,
+      }
+  }
+}
+
+function renderMonthCell(row: TableRow, monthIndex: number, tab: TabKey) {
+  const entry = row.months?.[monthIndex] ?? null
+  const values = getTabValues(entry, tab)
+
+  if (values === null) {
     return (
       <>
         <div>No data</div>
@@ -23,18 +48,19 @@ function renderMonthCell(row: TableRow, monthIndex: number) {
 
   return (
     <>
-      <div>{entry.plan.income}</div>
-      <div>{entry.plan.activePartners}</div>
+      <div>{values.income}</div>
+      <div>{values.activePartners}</div>
     </>
   )
 }
 
-function calculateRowTotal(row: TableRow) {
+function calculateRowTotal(row: TableRow, tab: TabKey) {
   const totals = row.months.reduce(
     (acc, entry) => {
-      if (entry !== null && entry !== undefined) {
-        acc.income += entry.plan.income
-        acc.activePartners += entry.plan.activePartners
+      const values = getTabValues(entry, tab)
+      if (values !== null) {
+        acc.income += values.income
+        acc.activePartners += values.activePartners
       }
       return acc
     },
@@ -43,7 +69,7 @@ function calculateRowTotal(row: TableRow) {
   return totals
 }
 
-function AffiliateTable({ data, visibleMonths, tab: _tab }: AffiliateTableProps) {
+function AffiliateTable({ data, visibleMonths, tab }: AffiliateTableProps) {
   const rows = data?.table || []
 
   const isValidMonthIndex = (index: number): boolean => {
@@ -126,7 +152,7 @@ function AffiliateTable({ data, visibleMonths, tab: _tab }: AffiliateTableProps)
         </div>
       ) : (
         rows.map((row, rowIndex) => {
-          const rowTotal = calculateRowTotal(row)
+          const rowTotal = calculateRowTotal(row, tab)
           return (
             <div key={`row-${rowIndex}`} style={{ display: 'contents' }}>
               <div
@@ -177,7 +203,7 @@ function AffiliateTable({ data, visibleMonths, tab: _tab }: AffiliateTableProps)
                         : 'none',
                   }}
                 >
-                  {renderMonthCell(row, monthIndex)}
+                  {renderMonthCell(row, monthIndex, tab)}
                 </div>
               ))}
             </div>
