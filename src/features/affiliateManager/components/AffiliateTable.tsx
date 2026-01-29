@@ -7,6 +7,9 @@ type AffiliateTableProps = {
   data: AffiliateDataResponse['data'] | null
   visibleMonths: number[]
   tab: TabKey
+  loading?: boolean
+  error?: string | null
+  onRetry?: () => void
 }
 
 function getTabValues(entry: MonthEntry, tab: TabKey): { income: number; activePartners: number } | null {
@@ -69,7 +72,14 @@ function calculateRowTotal(row: TableRow, tab: TabKey) {
   return totals
 }
 
-function AffiliateTable({ data, visibleMonths, tab }: AffiliateTableProps) {
+function AffiliateTable({
+  data,
+  visibleMonths,
+  tab,
+  loading = false,
+  error = null,
+  onRetry,
+}: AffiliateTableProps) {
   const rows = data?.table || []
 
   const isValidMonthIndex = (index: number): boolean => {
@@ -139,7 +149,46 @@ function AffiliateTable({ data, visibleMonths, tab }: AffiliateTableProps) {
         </div>
       ))}
 
-      {!isValidVisibleMonths ? (
+      {loading ? (
+        <div
+          className="p-8 col-span-8 flex items-center justify-center"
+          style={{
+            color: 'var(--color-text-secondary)',
+            fontSize: 'var(--font-size-base)',
+            borderTop: '1px solid var(--color-border)',
+          }}
+        >
+          Loading...
+        </div>
+      ) : error ? (
+        <div
+          className="p-8 col-span-8 flex flex-col items-center justify-center gap-4"
+          style={{
+            color: 'var(--color-text-primary)',
+            fontSize: 'var(--font-size-base)',
+            borderTop: '1px solid var(--color-border)',
+          }}
+        >
+          <div>Error: {error}</div>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              className="px-4 py-2 rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              style={{
+                backgroundColor: 'var(--color-primary)',
+                color: 'var(--color-text-white)',
+                borderRadius: 'var(--border-radius-large)',
+                fontSize: 'var(--font-size-base)',
+                lineHeight: 'var(--line-height-base)',
+                fontWeight: 'var(--font-weight-medium)',
+              }}
+            >
+              Retry
+            </button>
+          )}
+        </div>
+      ) : !isValidVisibleMonths ? (
         <div
           className="p-4 col-span-8"
           style={{
@@ -149,6 +198,17 @@ function AffiliateTable({ data, visibleMonths, tab }: AffiliateTableProps) {
           }}
         >
           Invalid month window
+        </div>
+      ) : rows.length === 0 ? (
+        <div
+          className="p-8 col-span-8 flex items-center justify-center"
+          style={{
+            color: 'var(--color-text-secondary)',
+            fontSize: 'var(--font-size-base)',
+            borderTop: '1px solid var(--color-border)',
+          }}
+        >
+          No rows
         </div>
       ) : (
         rows.map((row, rowIndex) => {

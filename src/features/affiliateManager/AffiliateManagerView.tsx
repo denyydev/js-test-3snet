@@ -17,7 +17,9 @@ function AffiliateManagerView() {
   
   const visibleMonths = getMonthWindow(startMonthIndex, 6)
 
-  useEffect(() => {
+  const loadData = () => {
+    setLoading(true)
+    setError(null)
     fetchAffiliateManagerData()
       .then((response) => {
         setData(response)
@@ -27,6 +29,10 @@ function AffiliateManagerView() {
         setError(err instanceof Error ? err.message : 'Failed to load data')
         setLoading(false)
       })
+  }
+
+  useEffect(() => {
+    loadData()
   }, [])
 
   return (
@@ -61,37 +67,23 @@ function AffiliateManagerView() {
             Add plan
           </button>
         </div>
-        <Tabs value={activeTab} onChange={setActiveTab} />
+        <Tabs
+          value={activeTab}
+          onChange={setActiveTab}
+          disabled={loading}
+        />
         <MonthPager
           onPrev={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, -1))}
           onNext={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, 1))}
+          disabled={loading || error !== null}
         />
-        {loading && (
-          <div
-            className="mb-4"
-            style={{
-              color: 'var(--color-text-secondary)',
-              fontSize: 'var(--font-size-base)',
-            }}
-          >
-            Loading...
-          </div>
-        )}
-        {error && (
-          <div
-            className="mb-4"
-            style={{
-              color: 'var(--color-text-primary)',
-              fontSize: 'var(--font-size-base)',
-            }}
-          >
-            Error: {error}
-          </div>
-        )}
         <AffiliateTable
           data={data?.data ?? null}
           visibleMonths={visibleMonths}
           tab={activeTab}
+          loading={loading}
+          error={error}
+          onRetry={loadData}
         />
       </main>
     </div>

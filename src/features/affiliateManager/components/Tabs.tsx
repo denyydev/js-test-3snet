@@ -3,9 +3,10 @@ export type TabKey = 'scheme' | 'plan' | 'payment'
 type TabsProps = {
   value: TabKey
   onChange: (value: TabKey) => void
+  disabled?: boolean
 }
 
-function Tabs({ value, onChange }: TabsProps) {
+function Tabs({ value, onChange, disabled = false }: TabsProps) {
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'scheme', label: 'Scheme' },
     { key: 'plan', label: 'Plan' },
@@ -24,8 +25,10 @@ function Tabs({ value, onChange }: TabsProps) {
               role="tab"
               aria-selected={isActive}
               aria-current={isActive ? 'page' : undefined}
-              onClick={() => onChange(tab.key)}
-              className="pb-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              aria-disabled={disabled}
+              onClick={() => !disabled && onChange(tab.key)}
+              disabled={disabled}
+              className="pb-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 color: isActive
                   ? 'var(--color-text-primary)'
