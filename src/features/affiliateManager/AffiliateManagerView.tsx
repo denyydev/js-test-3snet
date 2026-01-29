@@ -6,12 +6,14 @@ import AffiliateTable from './components/AffiliateTable'
 
 function AffiliateManagerView() {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <HeaderTop />
       <HeaderNav />
-      <Tabs />
-      <MonthPager />
-      <AffiliateTable />
+      <main className="flex-1 p-6">
+        <Tabs />
+        <MonthPager />
+        <AffiliateTable />
+      </main>
     </div>
   )
 }
