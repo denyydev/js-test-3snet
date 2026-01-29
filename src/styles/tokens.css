@@ -1,0 +1,11 @@
+/* Color and typography tokens */
+:root {
+  /* Colors - placeholder */
+  --color-primary: #000;
+  --color-secondary: #fff;
+  
+  /* Typography - placeholder */
+  --font-family-base: system-ui, sans-serif;
+  --font-size-base: 16px;
+}
+
