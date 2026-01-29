@@ -1,11 +1,42 @@
-/* Color and typography tokens */
 :root {
-  /* Colors - placeholder */
-  --color-primary: #000;
-  --color-secondary: #fff;
-  
-  /* Typography - placeholder */
-  --font-family-base: system-ui, sans-serif;
-  --font-size-base: 16px;
-}
+  --color-primary: #202F55;
+  --color-secondary: #40F3F7;
+  --color-text-primary: #202F55;
+  --color-text-secondary: #4F669D;
+  --color-text-muted: #A6B1B9;
+  --color-text-black: #000000;
+  --color-text-white: #FFFFFF;
+  --color-background-white: #FFFFFF;
+  --color-background-dark: #202F55;
+  --color-background-light: #F8FAFC;
+  --color-border: #D6E3EC;
+  --color-border-secondary: #DDDEDF;
 
+  --font-family-base: 'Roboto', system-ui, sans-serif;
+  --font-family-display: 'Days One', system-ui, sans-serif;
+
+  --font-size-display: 48px;
+  --font-size-heading: 24px;
+  --font-size-large: 18px;
+  --font-size-base: 16px;
+  --font-size-medium: 14px;
+  --font-size-small: 12px;
+  --font-size-tiny: 11px;
+
+  --line-height-display: 61px;
+  --line-height-heading: 24px;
+  --line-height-large: 22px;
+  --line-height-base: 20px;
+  --line-height-medium: 18px;
+  --line-height-small: 16px;
+  --line-height-tiny: 13px;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+
+  --letter-spacing-base: 0.01em;
+
+  --border-radius-large: 8px;
+  --border-radius-medium: 6px;
+  --border-radius-small: 4px;
+}

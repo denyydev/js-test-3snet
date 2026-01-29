@@ -1,6 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Days+One&family=Roboto:wght@400;500&display=swap');
 @import './tokens.css';
 
-/* Base styles */
 * {
   box-sizing: border-box;
 }
@@ -9,5 +9,8 @@ body {
   margin: 0;
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background-white);
+  letter-spacing: var(--letter-spacing-base);
 }
-
