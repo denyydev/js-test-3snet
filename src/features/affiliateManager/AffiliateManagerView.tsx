@@ -6,14 +6,14 @@ import MonthPager from './components/MonthPager'
 import AffiliateTable from './components/AffiliateTable'
 import { fetchAffiliateManagerData } from '../../api/affiliateManager'
 import type { AffiliateDataResponse } from '../../types/api'
-import { getCurrentMonthIndex, getMonthWindow } from '../../utils/months'
+import { getCurrentMonthIndex, getMonthWindow, shiftMonthIndex } from '../../utils/months'
 
 function AffiliateManagerView() {
   const [activeTab, setActiveTab] = useState<TabKey>('scheme')
   const [data, setData] = useState<AffiliateDataResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [startMonthIndex] = useState(getCurrentMonthIndex)
+  const [startMonthIndex, setStartMonthIndex] = useState(getCurrentMonthIndex)
   
   const visibleMonths = getMonthWindow(startMonthIndex, 6)
 
@@ -62,7 +62,10 @@ function AffiliateManagerView() {
           </button>
         </div>
         <Tabs value={activeTab} onChange={setActiveTab} />
-        <MonthPager />
+        <MonthPager
+          onPrev={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, -1))}
+          onNext={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, 1))}
+        />
         {loading && (
           <div
             className="mb-4"
