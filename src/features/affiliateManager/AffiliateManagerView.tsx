@@ -1,64 +1,81 @@
-import { useState, useEffect } from 'react'
-import HeaderTop from './components/HeaderTop'
-import HeaderNav from './components/HeaderNav'
-import Tabs, { type TabKey } from './components/Tabs'
-import MonthPager from './components/MonthPager'
-import AffiliateTable from './components/AffiliateTable'
-import { fetchAffiliateManagerData } from '../../api/affiliateManager'
-import type { AffiliateDataResponse } from '../../types/api'
-import { getCurrentMonthIndex, getMonthWindow, shiftMonthIndex } from '../../utils/months'
+import { useEffect, useState } from "react";
+import { fetchAffiliateManagerData } from "../../api/affiliateManager";
+import type { AffiliateDataResponse } from "../../types/api";
+import {
+  getCurrentMonthIndex,
+  getMonthWindow,
+  shiftMonthIndex,
+} from "../../utils/months";
+import AffiliateTable from "./components/AffiliateTable";
+import HeaderNav from "./components/HeaderNav";
+import HeaderTop from "./components/HeaderTop";
+import MonthPager from "./components/MonthPager";
+import Tabs, { type TabKey } from "./components/Tabs";
 
 function AffiliateManagerView() {
-  const [activeTab, setActiveTab] = useState<TabKey>('scheme')
-  const [data, setData] = useState<AffiliateDataResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [startMonthIndex, setStartMonthIndex] = useState(getCurrentMonthIndex)
+  const [activeTab, setActiveTab] = useState<TabKey>("scheme");
+  const [data, setData] = useState<AffiliateDataResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [startMonthIndex, setStartMonthIndex] = useState(getCurrentMonthIndex);
 
-  const visibleMonths = getMonthWindow(startMonthIndex, 6)
+  const visibleMonths = getMonthWindow(startMonthIndex, 6);
 
   const loadData = () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     fetchAffiliateManagerData()
       .then((response) => {
-        setData(response)
-        setLoading(false)
+        setData(response);
+        setLoading(false);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : 'Failed to load data')
-        setLoading(false)
-      })
-  }
+        setError(err instanceof Error ? err.message : "Failed to load data");
+        setLoading(false);
+      });
+  };
 
   useEffect(() => {
-    loadData()
-  }, [])
+    let cancelled = false;
+    
+    fetchAffiliateManagerData()
+      .then((response) => {
+        if (!cancelled) {
+          setData(response);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : "Failed to load data");
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col">
       <HeaderTop />
       <HeaderNav />
-      <main className="flex-1 p-6">
+      <main className="flex-1 py-6 max-w-6xl mx-auto w-full">
         <div className="flex items-center justify-between mb-6">
           <h1
             className="text-2xl font-medium"
             style={{
-              color: 'var(--color-text-primary)',
-              fontSize: 'var(--font-size-heading)',
-              lineHeight: 'var(--line-height-heading)',
-              fontWeight: 'var(--font-weight-medium)'
+              color: "var(--color-text-primary)",
+              fontSize: "var(--font-size-heading)",
+              lineHeight: "var(--line-height-heading)",
+              fontWeight: "var(--font-weight-medium)",
             }}
           >
             Affiliate manager
           </h1>
-
         </div>
-        <Tabs
-          value={activeTab}
-          onChange={setActiveTab}
-          disabled={loading}
-        />
+        <Tabs value={activeTab} onChange={setActiveTab} />
         <div className="flex items-center justify-between pb-5">
           <button
             type="button"
@@ -78,8 +95,12 @@ function AffiliateManagerView() {
 
           <div className="flex items-center gap-4">
             <MonthPager
-              onPrev={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, -1))}
-              onNext={() => setStartMonthIndex((prev) => shiftMonthIndex(prev, 1))}
+              onPrev={() =>
+                setStartMonthIndex((prev) => shiftMonthIndex(prev, -1))
+              }
+              onNext={() =>
+                setStartMonthIndex((prev) => shiftMonthIndex(prev, 1))
+              }
               disabled={loading || error !== null}
             />
 
@@ -103,8 +124,7 @@ function AffiliateManagerView() {
         />
       </main>
     </div>
-  )
+  );
 }
 
-export default AffiliateManagerView
-
+export default AffiliateManagerView;

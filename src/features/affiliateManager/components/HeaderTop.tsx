@@ -1,7 +1,7 @@
 function HeaderTop() {
   return (
     <header className="h-20 bg-[var(--color-background-dark)] text-[var(--color-text-white)]">
-      <div className="mx-auto flex h-full w-[1440px] items-center justify-between px-10">
+      <div className="mx-auto flex h-full max-w-6xl items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="text-[32px] font-semibold leading-none text-[var(--color-accent)]">
             3S
@@ -38,7 +38,9 @@ function HeaderTop() {
             aria-label="Notifications"
           >
             <BellIcon className="h-4 w-4 text-[var(--color-accent)]" />
-            <span className="text-[14px] font-medium text-[var(--color-text-white)]">8</span>
+            <span className="text-[14px] font-medium text-[var(--color-text-white)]">
+              8
+            </span>
           </button>
           <a
             href="#"
@@ -58,22 +60,32 @@ function HeaderTop() {
         </div>
       </div>
     </header>
-  )
+  );
 }
 
-export default HeaderTop
+export default HeaderTop;
 
 function CaretDownIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 16 16" fill="currentColor" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
       <path d="M4.2 6.2a.8.8 0 0 1 1.1 0L8 8.9l2.7-2.7a.8.8 0 1 1 1.1 1.1L8.6 10.5a.9.9 0 0 1-1.2 0L4.2 7.3a.8.8 0 0 1 0-1.1Z" />
     </svg>
-  )
+  );
 }
 
 function BellIcon({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
       <path
         d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Z"
         fill="currentColor"
@@ -93,7 +105,7 @@ function BellIcon({ className }: { className?: string }) {
         opacity="0.8"
       />
     </svg>
-  )
+  );
 }
 
 function FlagUk({ className }: { className?: string }) {
@@ -112,5 +124,5 @@ function FlagUk({ className }: { className?: string }) {
         <path d="M30 0v40M0 20h60" stroke="#C8102E" strokeWidth="10" />
       </g>
     </svg>
-  )
+  );
 }
