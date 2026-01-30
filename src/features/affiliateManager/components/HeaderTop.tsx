@@ -1,29 +1,31 @@
 function HeaderTop() {
   return (
     <header className="h-20 bg-[var(--color-background-dark)] text-[var(--color-text-white)]">
-      <div className="mx-auto flex h-full max-w-6xl items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="text-[32px] font-semibold leading-none text-[var(--color-accent)]">
-            3S
+      <div className="mx-auto flex h-full max-w-360 w-full items-center justify-between px-10">
+        <div className="flex items-center gap-12">
+          <div className="flex items-center gap-4">
+            <div className="text-6xl font-semibold leading-none text-[var(--color-accent)]">
+              3S
+            </div>
+            <div className="flex flex-col leading-none">
+              <span className="text-[12px] font-semibold tracking-[0.12em] text-[var(--color-text-muted-on-dark)]">
+                CPA
+              </span>
+              <span className="mt-1 text-[12px] font-semibold tracking-[0.12em] text-[var(--color-text-muted-on-dark)]">
+                NETWORK
+              </span>
+            </div>
           </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-[12px] font-semibold tracking-[0.12em] text-[var(--color-text-muted-on-dark)]">
-              CPA
-            </span>
-            <span className="mt-1 text-[12px] font-semibold tracking-[0.12em] text-[var(--color-text-muted-on-dark)]">
-              NETWORK
-            </span>
-          </div>
+          <nav className="flex items-center gap-10 text-lg font-medium tracking-[0.08em] text-[var(--color-text-white)]">
+            <a href="#" className="hover:text-[var(--color-accent)]">
+              PAYMENT SYSTEMS
+            </a>
+            <a href="#" className="hover:text-[var(--color-accent)]">
+              REFERRALS
+            </a>
+          </nav>
         </div>
-        <nav className="flex items-center gap-10 text-[14px] font-medium tracking-[0.08em] text-[var(--color-text-white)]">
-          <a href="#" className="hover:text-[var(--color-accent)]">
-            PAYMENT SYSTEMS
-          </a>
-          <a href="#" className="hover:text-[var(--color-accent)]">
-            REFERRALS
-          </a>
-        </nav>
-        <div className="flex items-center gap-6 text-[14px]">
+        <div className="flex items-center gap-13 text-lg">
           <button
             type="button"
             className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-[var(--color-text-white)] hover:bg-[rgba(255,255,255,0.06)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-background-dark)]"
@@ -38,7 +40,7 @@ function HeaderTop() {
             aria-label="Notifications"
           >
             <BellIcon className="h-4 w-4 text-[var(--color-accent)]" />
-            <span className="text-[14px] font-medium text-[var(--color-text-white)]">
+            <span className="text-lg font-medium text-[var(--color-text-white)]">
               8
             </span>
           </button>

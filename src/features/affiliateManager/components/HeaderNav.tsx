@@ -1,7 +1,7 @@
 function HeaderNav() {
   return (
-    <nav className="py-5 w-full border-b border-[var(--color-border)] bg-[var(--color-background-white)]">
-      <div className="flex items-center justify-between w-full mx-auto max-w-6xl text-[16px] font-medium uppercase tracking-[0.01em] text-[var(--color-text-primary)]">
+    <nav className="py-6 w-full border-b border-[var(--color-border)] bg-[var(--color-background-white)]">
+      <div className="flex items-center justify-between w-full mx-auto max-w-360 text-[16px] font-medium uppercase tracking-[0.01em] text-[var(--color-text-primary)] px-10">
         <a href="#" className="relative flex h-full items-center">
           dashboard
           <span className="absolute bottom-0 left-0 h-[3px] w-full bg-[var(--color-accent)]" />

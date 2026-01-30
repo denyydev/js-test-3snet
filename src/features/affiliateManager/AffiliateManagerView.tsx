@@ -13,7 +13,7 @@ import MonthPager from "./components/MonthPager";
 import Tabs, { type TabKey } from "./components/Tabs";
 
 function AffiliateManagerView() {
-  const [activeTab, setActiveTab] = useState<TabKey>("scheme");
+  const [activeTab, setActiveTab] = useState<TabKey>("plan");
   const [data, setData] = useState<AffiliateDataResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,7 +37,7 @@ function AffiliateManagerView() {
 
   useEffect(() => {
     let cancelled = false;
-    
+
     fetchAffiliateManagerData()
       .then((response) => {
         if (!cancelled) {
@@ -61,8 +61,8 @@ function AffiliateManagerView() {
     <div className="flex flex-col">
       <HeaderTop />
       <HeaderNav />
-      <main className="flex-1 py-6 max-w-6xl mx-auto w-full">
-        <div className="flex items-center justify-between mb-6">
+      <main className="flex-1 py-6 max-w-360 px-10 mx-auto w-full">
+        <div className="flex items-center justify-between mb-13 px-10">
           <h1
             className="text-2xl font-medium"
             style={{
@@ -76,7 +76,7 @@ function AffiliateManagerView() {
           </h1>
         </div>
         <Tabs value={activeTab} onChange={setActiveTab} />
-        <div className="flex items-center justify-between pb-5">
+        <div className="flex items-center justify-between pb-7">
           <button
             type="button"
             className="flex h-10 w-[130px] items-center justify-between rounded-md border border-[#D6E3EC] bg-white px-3 text-[16px] font-medium text-[#4F669D]"

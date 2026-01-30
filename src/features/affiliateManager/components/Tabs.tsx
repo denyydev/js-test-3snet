@@ -14,7 +14,7 @@ function Tabs({ value, onChange, disabled = false }: TabsProps) {
   ];
 
   return (
-    <div className="mb-6">
+    <div className="mb-8 px-5">
       <div className="flex gap-10">
         {tabs.map((tab) => {
           const isActive = value === tab.key;
@@ -45,7 +45,7 @@ function Tabs({ value, onChange, disabled = false }: TabsProps) {
         })}
       </div>
 
-      <div className="mt-3 h-px w-full bg-[#D6E3EC]" />
+      <div className="h-px w-full bg-[#D6E3EC]" />
     </div>
   );
 }
