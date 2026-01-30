@@ -1,3 +1,5 @@
+[Deploy Vercel](https://js-test-3snet.vercel.app/)
+
 ## Technologies
 
 - React 18
