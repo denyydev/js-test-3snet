@@ -4,7 +4,7 @@ function HeaderTop() {
       <div className="mx-auto flex h-full max-w-360 w-full items-center justify-between px-10">
         <div className="flex items-center gap-12">
           <div className="flex items-center gap-4">
-            <div className="text-6xl font-semibold leading-none text-[var(--color-accent)]">
+            <div className="text-5xl font-semibold leading-none  text-[#40f3f7]">
               3S
             </div>
             <div className="flex flex-col leading-none">

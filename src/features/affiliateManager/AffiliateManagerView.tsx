@@ -62,9 +62,9 @@ function AffiliateManagerView() {
       <HeaderTop />
       <HeaderNav />
       <main className="flex-1 py-6 max-w-360 px-10 mx-auto w-full">
-        <div className="flex items-center justify-between mb-13 px-10">
+        <div className="flex items-center mb-13">
           <h1
-            className="text-2xl font-medium"
+            className="text-2xl font-medium flex gap-5"
             style={{
               color: "var(--color-text-primary)",
               fontSize: "var(--font-size-heading)",
@@ -72,6 +72,7 @@ function AffiliateManagerView() {
               fontWeight: "var(--font-weight-medium)",
             }}
           >
+            <span>&lt;</span>
             Affiliate manager
           </h1>
         </div>
@@ -79,7 +80,7 @@ function AffiliateManagerView() {
         <div className="flex items-center justify-between pb-7">
           <button
             type="button"
-            className="flex h-10 w-[130px] items-center justify-between rounded-md border border-[#D6E3EC] bg-white px-3 text-[16px] font-medium text-[#4F669D]"
+            className="flex h-10 items-center justify-between rounded-md border border-[#D6E3EC] bg-white px-3 text-[16px] font-medium text-[#4F669D]"
           >
             Year 2025
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
